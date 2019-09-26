@@ -35,7 +35,7 @@ class RateLimiter {
 	}
 
 
-	public add<T = any>(fn: () => void | Promise<void>, callback?: (response: ICompletedRateLimiterObject<T>, err?: Error) => void): void {
+	public add<T = any>(fn: () => void | T | Promise<void | T>, callback?: (response: ICompletedRateLimiterObject<T>, err?: Error) => void): void {
 		const rateLimitedCall: IProcessingRateLimiterObject = {
 			callback,
 			function: fn,
@@ -50,7 +50,7 @@ class RateLimiter {
 		// do queuing magic
 	}
 
-	public addPromise<T = any>(fn: () => void | Promise<void>): Promise<ICompletedRateLimiterObject<T>> {
+	public addPromise<T = any>(fn: () => void | T | Promise<void | T>): Promise<ICompletedRateLimiterObject<T>> {
 		return new Promise((resolve, reject) => {
 			this.add(fn, (response: ICompletedRateLimiterObject, err?: Error) => {
 				if (err) {
@@ -145,14 +145,14 @@ class RateLimiter {
 }
 interface IProcessingRateLimiterObject<T = any> {
 	timeAdded: number;
-	function: () => void | Promise<void>;
+	function: () => void | T | Promise<void | T>;
 	// promise?: Promise<void>;
 	callback?: (response: ICompletedRateLimiterObject<T>, err?: Error) => void;
 }
 interface ICompletedRateLimiterObject<T = any> {
 	timeCompleted: number;
 	timeAdded: number;
-	function: () => void | Promise<void>;
+	function: () => void | T | Promise<void | T>;
 	callback?: (response: ICompletedRateLimiterObject<T>, err?: Error) => void;
 	returnValue?: T;
 }
