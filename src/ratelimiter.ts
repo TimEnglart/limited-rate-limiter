@@ -154,7 +154,7 @@ interface ICompletedRateLimiterObject<T = any> {
 	timeAdded: number;
 	function: () => void | T | Promise<void | T>;
 	callback?: (response: ICompletedRateLimiterObject<T>, err?: Error) => void;
-	returnValue?: T;
+	returnValue: T;
 }
 
 interface IRateLimiterOptions {
