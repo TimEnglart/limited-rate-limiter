@@ -1,3 +1,5 @@
+import { LinkedList, DoublyLinkedListNode } from "./LinkedList";
+
 class Queue<T = any> extends LinkedList<T> {
   public dequeueNode(): DoublyLinkedListNode<T> | null {
     let nodeData: DoublyLinkedListNode<T> | null = null;

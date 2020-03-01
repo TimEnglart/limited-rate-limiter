@@ -1,6 +1,6 @@
 {
   "name": "limited-rate-limiter",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Rate-Limiter that uses a Generic Queue",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
