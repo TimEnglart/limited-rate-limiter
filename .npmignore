@@ -20,4 +20,4 @@ tsconfig.json
 tslint.json
 
 
-/src/
+src/
