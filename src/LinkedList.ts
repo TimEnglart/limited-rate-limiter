@@ -35,8 +35,8 @@ class LinkedList<T = any> {
     }
     else {
       item.next = this._firstNode;
+      this._firstNode.previous = item;
       this._firstNode = item;
-      this._firstNode.next = item;
     }
     this._length++;
   }
