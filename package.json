@@ -1,12 +1,12 @@
 {
   "name": "limited-rate-limiter",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Rate-Limiter that uses a Generic Queue",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p . --declaration"
+    "build": "tsc -p . --declaration",
+    "test": "node tests/ratelimit-test.js"
   },
   "author": "Tim Englart",
   "license": "ISC",

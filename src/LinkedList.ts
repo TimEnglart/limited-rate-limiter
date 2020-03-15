@@ -16,38 +16,32 @@ class LinkedList<T = any> {
       currentNode = currentNode.next;
     }
   }
-  private addLast(item: DoublyLinkedListNode<T>) {
-    if (this._firstNode === null) {
-      // No First Node
+  private addLast(item: DoublyLinkedListNode<T>): void {
+    if(!this._firstNode || !this._lastNode) {
       this._firstNode = item;
-    } else {
-      if (this._lastNode === null) {
-        // No Last Node
-        this._lastNode = item;
-        this._lastNode.previous = this._firstNode;
-        this._firstNode.next = item;
-      } else {
-        // There Are Both a First And Last Node
-        this._lastNode.next = item;
-        item.previous = this._lastNode;
-        this._lastNode = item;
-      }
+      this._lastNode = item;
+    }
+    else {
+      item.previous = this._lastNode;
+      this._lastNode.next = item;
+      this._lastNode = item;
     }
     this._length++;
   }
-  private addFirst(item: DoublyLinkedListNode<T>) {
-    if (this._firstNode === null) {
-      // No First Node
+  private addFirst(item: DoublyLinkedListNode<T>): void {
+    if(!this._firstNode || !this._lastNode) {
       this._firstNode = item;
-    } else {
+      this._lastNode = item;
+    }
+    else {
       item.next = this._firstNode;
-      this._firstNode.previous = item;
       this._firstNode = item;
+      this._firstNode.next = item;
     }
     this._length++;
   }
 
-  public push(...items: DoublyLinkedListNode<T>[] | T[]) {
+  public push(...items: DoublyLinkedListNode<T>[] | T[]): void {
     for (const item of items) {
       this.addLast(
         item instanceof DoublyLinkedListNode
@@ -56,7 +50,7 @@ class LinkedList<T = any> {
       );
     }
   }
-  public unshift(...items: DoublyLinkedListNode<T>[] | T[]) {
+  public unshift(...items: DoublyLinkedListNode<T>[] | T[]): void {
     for (const item of items) {
       this.addFirst(
         item instanceof DoublyLinkedListNode
@@ -70,45 +64,29 @@ class LinkedList<T = any> {
     ...items: DoublyLinkedListNode<T>[]
   ) {}
 
-  public pop() {
-    const lastNode = this._lastNode;
-    if (this._lastNode) {
-      const secondLastNode = this._lastNode.previous;
-      if (secondLastNode) {
-        this._lastNode.next = null;
-        this._lastNode.previous = secondLastNode.previous;
-        this._lastNode.data = secondLastNode.data;
-      } else {
-        // There is Only One Node
-        this._lastNode = null;
-        this._firstNode = null;
-      }
-    }
-    return lastNode;
+  public pop(): DoublyLinkedListNode<T> | undefined {
+    let node: DoublyLinkedListNode<T> | undefined;
+		if (this._lastNode) {
+			node = this._lastNode;
+			this._lastNode = node.previous;
+		}
+		return node;
   }
-  public shift() {
-    const firstNode = this._firstNode;
-    if (this._firstNode) {
-      const secondNode = this._firstNode.next;
-      if (secondNode) {
-        this._firstNode.previous = null;
-        this._firstNode.next = secondNode.next;
-        this._firstNode.data = secondNode.data;
-      } else {
-        // There is Only One Node
-        this._lastNode = null;
-        this._firstNode = null;
-      }
-    }
-    return firstNode;
+  public shift(): DoublyLinkedListNode<T> | undefined {
+    let node: DoublyLinkedListNode<T> | undefined;
+		if (this._firstNode) {
+			node = this._firstNode;
+			this._firstNode = node.next;
+		}
+		return node;
   }
-  public clear() {
+  public clear(): void {
     this._firstNode = null;
     this._lastNode = null;
     this._length = 0;
     // Garbage Collection?
   }
-  public toArray() {
+  public toArray(): DoublyLinkedListNode<T>[] {
     const array: DoublyLinkedListNode<T>[] = [];
     for (const node of this) {
       array.push(node);
