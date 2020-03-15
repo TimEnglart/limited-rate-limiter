@@ -31,7 +31,7 @@ class RateLimiter {
     // tslint:disable-next-line: no-console
     this._stdErr = options.stdErr || console.error;
 
-    this._queue = new Queue<any>();
+    this._queue = new Queue<IProcessingRateLimiterObject<any>>();
     if (!this._nonConcurrent) this.resetOperations(this._rate);
   }
 
@@ -96,7 +96,7 @@ class RateLimiter {
       this._stdOut(`Exiting LOOP --- TOKENS: ${this._tokens} --- QueuePop: ${this._queue.length}`);
     // tslint:disable-next-line: no-floating-promises
     if (!this._queue.isEmpty) return this.run(true);
-    this._running = false;
+    else this._running = false;
   }
   private async handleCallback<T>(request: IProcessingRateLimiterObject<T>): Promise<void> {
     let returnValue: T | undefined;
