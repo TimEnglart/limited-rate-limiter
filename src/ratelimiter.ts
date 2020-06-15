@@ -53,7 +53,7 @@ class RateLimiter {
           return reject(error);
         }
         return resolve(response);
-      }, ...args);
+      }, args);
     });
   }
 
