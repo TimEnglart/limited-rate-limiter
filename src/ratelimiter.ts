@@ -4,7 +4,7 @@ class RateLimiter {
   private _rate: number;
   private _delay: number;
 
-  private _queue: Queue<IProcessingRateLimiterObject<any>>;
+  private _queue: Queue<IProcessingRateLimiterObject<any, any>>;
 
   private _running: boolean = false;
   private _tokens: number = 1;
@@ -31,21 +31,21 @@ class RateLimiter {
     // tslint:disable-next-line: no-console
     this._stdErr = options.stdErr || console.error;
 
-    this._queue = new Queue<IProcessingRateLimiterObject<any>>();
+    this._queue = new Queue<IProcessingRateLimiterObject<any, any>>();
     if (!this._nonConcurrent) this.resetOperations(this._rate);
   }
 
-  public addSync<T = void>(fn: (...args: any[]) => T | Promise<T>, callback?: (response: ICompletedRateLimiterObject<T>, err?: Error) => void, ...args: any[]): void {
+  public addSync<T = void, K = any>(fn: (...args: K[]) => T | Promise<T>, callback?: (response: ICompletedRateLimiterObject<T, K>, err?: Error) => void, ...args: K[]): void {
     this._queue.enqueue({
       function: fn,
       callback: callback,
       arguments: args,
       timeAdded: Date.now()
     });
-    this.run<T>();
+    this.run<T, K>();
   }
 
-  public add<T = void>(fn: (...args: any[]) => T | Promise<T>, ...args: any[]): Promise<ICompletedRateLimiterObject<T>> {
+  public add<T = void, K = any>(fn: (...args: K[]) => T | Promise<T>, ...args: K[]): Promise<ICompletedRateLimiterObject<T, K>> {
     return new Promise((resolve, reject) => {
       this.addSync(fn, (response, error) => {
         if (error) {
@@ -53,7 +53,7 @@ class RateLimiter {
           return reject(error);
         }
         return resolve(response);
-      }, args);
+      }, ...args);
     });
   }
 
@@ -76,7 +76,7 @@ class RateLimiter {
     else this._resetting = false;
   }
 
-  private async run<T>(bypass?: boolean): Promise<void> {
+  private async run<T, K>(bypass?: boolean): Promise<void> {
     if (!this._resetting && (!this._nonConcurrent || !this._returnTokenOnCompletion))
       this.resetOperations();
     if (this._running && !bypass) return;
@@ -88,7 +88,7 @@ class RateLimiter {
         this._tokens--;
         const request = this._queue.dequeue();
         if (!request) return;
-        await this.handleCallback<T>(request);
+        await this.handleCallback<T, K>(request);
       } 
       else this._limiting = true;
     }
@@ -98,11 +98,11 @@ class RateLimiter {
     if (!this._queue.isEmpty) return this.run(true);
     else this._running = false;
   }
-  private async handleCallback<T>(request: IProcessingRateLimiterObject<T>): Promise<void> {
+  private async handleCallback<T, K>(request: IProcessingRateLimiterObject<T, K>): Promise<void> {
     let returnValue: T | undefined;
     let error: Error | undefined;
     try {
-      returnValue = await request.function(request.arguments);
+      returnValue = await request.function(...request.arguments);
     }
     catch(e) {
       error = e;
@@ -146,13 +146,13 @@ class RateLimiter {
     this._operations = milliseconds;
   }
 }
-interface IProcessingRateLimiterObject<T> {
-  function: (...args: any[]) => T | Promise<T>,
-  callback: ((response: ICompletedRateLimiterObject<T>, err?: Error) => void) | undefined,
-  arguments: any[],
+interface IProcessingRateLimiterObject<T, K> {
+  function: (...args: K[]) => T | Promise<T>,
+  callback: ((response: ICompletedRateLimiterObject<T, K>, err?: Error) => void) | undefined,
+  arguments: K[],
   timeAdded: number
 }
-interface ICompletedRateLimiterObject<T> extends IProcessingRateLimiterObject<T> {
+interface ICompletedRateLimiterObject<T, K> extends IProcessingRateLimiterObject<T, K> {
   timeCompleted: number;
   returnValue: T | undefined;
 }
