@@ -1,4 +1,6 @@
 import { Queue } from "./queue";
+
+type Output = (message?: any, ...optionalParams: any[]) => void;
 class RateLimiter {
   private _operations: number;
   private _rate: number;
@@ -9,8 +11,8 @@ class RateLimiter {
   private _running: boolean = false;
   private _tokens: number = 1;
   private _limiting: boolean = false;
-  private _stdOut: (message?: any, ...optionalParams: any[]) => void;
-  private _stdErr: (message?: any, ...optionalParams: any[]) => void;
+  private _stdOut: Output;
+  private _stdErr: Output;
 
   private _returnTokenOnCompletion: boolean;
   private _nonConcurrent: boolean;
@@ -35,7 +37,7 @@ class RateLimiter {
     if (!this._nonConcurrent) this.resetOperations(this._rate);
   }
 
-  public addSync<T = void, K = any>(fn: (...args: K[]) => T | Promise<T>, callback?: (response: ICompletedRateLimiterObject<T, K>, err?: Error) => void, ...args: K[]): void {
+  public add<T = void, K = any>(fn: (...args: K[]) => T, callback?: (response: ICompletedRateLimiterObject<T, K>, err?: Error) => void, ...args: K[]): void {
     this._queue.enqueue({
       function: fn,
       callback: callback,
@@ -45,9 +47,9 @@ class RateLimiter {
     this.run<T, K>();
   }
 
-  public add<T = void, K = any>(fn: (...args: K[]) => T | Promise<T>, ...args: K[]): Promise<ICompletedRateLimiterObject<T, K>> {
+  public addPromise<T = void, K = any>(fn: (...args: K[]) => T, ...args: K[]): Promise<ICompletedRateLimiterObject<T, K>> {
     return new Promise((resolve, reject) => {
-      this.addSync(fn, (response, error) => {
+      this.add(fn, (response, error) => {
         if (error) {
           this._stdErr(error);
           return reject(error);
@@ -113,10 +115,6 @@ class RateLimiter {
           returnValue: returnValue
         }), error);
     if (this._returnTokenOnCompletion) {
-      // give it a bit of time to catch up
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), this.rate);
-      });
       this._tokens++;
     }
   }
@@ -147,7 +145,7 @@ class RateLimiter {
   }
 }
 interface IProcessingRateLimiterObject<T, K> {
-  function: (...args: K[]) => T | Promise<T>,
+  function: (...args: K[]) => T,
   callback: ((response: ICompletedRateLimiterObject<T, K>, err?: Error) => void) | undefined,
   arguments: K[],
   timeAdded: number
@@ -162,8 +160,8 @@ interface IRateLimiterOptions {
   rate?: number; // How Long to Wait for max operations to be hit to implement delay
   delay?: number; // Once Rate Limit is Hit How long to wait
   returnTokenOnCompletion?: boolean;
-  stdOut?: void;
-  stdErr?: void;
+  stdOut?: Output;
+  stdErr?: Output;
   debugOutput?: boolean;
 }
 

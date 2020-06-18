@@ -14,7 +14,7 @@ class Queue<T = any> extends LinkedList<T> {
     return nodeData ? nodeData.data : null;
   }
   public enqueue(...items: T[]): void {
-    this.unshift(...items);
+    this.push(...items);
   }
 }
 export { Queue };

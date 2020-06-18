@@ -59,10 +59,9 @@ class LinkedList<T = any> {
       );
     }
   }
-  public pushAfter(
-    after: DoublyLinkedListNode<T>,
-    ...items: DoublyLinkedListNode<T>[]
-  ) {}
+  public pushAfter(after: DoublyLinkedListNode<T> | number, ...items: DoublyLinkedListNode<T>[]) {
+  
+  }
 
   public pop(): DoublyLinkedListNode<T> | undefined {
     let node: DoublyLinkedListNode<T> | undefined;
@@ -97,7 +96,7 @@ class LinkedList<T = any> {
     return this._length;
   }
   get isEmpty() {
-    return this.length === 0;
+    return this._length === 0;
   }
   get firstNode() {
     return this._firstNode;
