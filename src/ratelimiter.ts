@@ -1,6 +1,8 @@
 import { Queue } from "./queue";
 
 type Output = (message?: any, ...optionalParams: any[]) => void;
+type UnPromisify<T> = T extends Promise<infer U> ? U : T;
+
 class RateLimiter {
   private _operations: number;
   private _rate: number;
@@ -47,7 +49,7 @@ class RateLimiter {
     this.run<T, K>();
   }
 
-  public addPromise<T = void, K = any>(fn: (...args: K[]) => T, ...args: K[]): Promise<ICompletedRateLimiterObject<T, K>> {
+  public addPromise<T = void, K = any>(fn: (...args: K[]) => UnPromisify<T>, ...args: K[]): Promise<ICompletedRateLimiterObject<UnPromisify<T>, K>> {
     return new Promise((resolve, reject) => {
       this.add(fn, (response, error) => {
         if (error) {

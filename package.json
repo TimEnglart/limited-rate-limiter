@@ -1,9 +1,11 @@
 {
   "name": "limited-rate-limiter",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Rate-Limiter that uses a Generic Queue",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "repository": "git://github.com/TimEnglart/limited-rate-limiter",
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "scripts": {
     "build": "tsc -p . --declaration",
     "test": "node tests/ratelimit-test.js"
