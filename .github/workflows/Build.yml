@@ -1,0 +1,35 @@
+name: Build & Publish
+
+on:
+  push:
+    paths-ignore:
+      - "etc/**"
+      - "client/**"
+  pull_request:
+    paths-ignore:
+      - "etc/**"
+      - "client/**"
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+      - name: Install NPM Packages
+        run: npm install
+        env:
+          CI: TRUE
+      - name: Build Solution
+        run: npm run build
+      - name: Publish Solution
+        env: 
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: | 
+          echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
+          npm publish
+
+

@@ -1,10 +1,10 @@
 {
-  "name": "limited-rate-limiter",
-  "version": "1.0.14",
+  "name": "@TimEnglart/limited-rate-limiter",
+  "version": "1.0.15",
   "description": "Rate-Limiter that uses a Generic Queue",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "repository": "git://github.com/TimEnglart/limited-rate-limiter",
+  "repository": "git://github.com/TimEnglart/limited-rate-limiter.git",
   "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "scripts": {
     "build": "tsc -p . --declaration",
