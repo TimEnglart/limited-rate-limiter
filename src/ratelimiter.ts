@@ -39,7 +39,7 @@ class RateLimiter {
     if (!this._nonConcurrent) this.resetOperations(this._rate);
   }
 
-  public add<T = void, K = any>(fn: (...args: K[]) => T, callback?: (response: ICompletedRateLimiterObject<T, K>, err?: Error) => void, ...args: K[]): void {
+  public add<T = void, K = any>(fn: (...args: K[]) => T, callback?: (response: ICompletedRateLimiterObject<UnPromisify<T>, K>, err?: Error) => void, ...args: K[]): void {
     this._queue.enqueue({
       function: fn,
       callback: callback,
@@ -49,7 +49,7 @@ class RateLimiter {
     this.run<T, K>();
   }
 
-  public addPromise<T = void, K = any>(fn: (...args: K[]) => UnPromisify<T>, ...args: K[]): Promise<ICompletedRateLimiterObject<UnPromisify<T>, K>> {
+  public addPromise<T = void, K = any>(fn: (...args: K[]) => T, ...args: K[]): Promise<ICompletedRateLimiterObject<UnPromisify<T>, K>> {
     return new Promise((resolve, reject) => {
       this.add(fn, (response, error) => {
         if (error) {
