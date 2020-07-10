@@ -99,7 +99,10 @@ class RateLimiter {
       this._stdOut(`Exiting LOOP --- TOKENS: ${this._tokens} --- QueuePop: ${this._queue.length}`);
     // tslint:disable-next-line: no-floating-promises
     if (!this._queue.isEmpty) return this.run(true);
-    else this._running = false;
+    else {
+      this._running = false;
+      this.run(); // maybe fix
+    }
   }
   private async handleCallback<T, K>(request: IProcessingRateLimiterObject<T, K>): Promise<void> {
     let returnValue: T | undefined;
@@ -118,6 +121,16 @@ class RateLimiter {
     if (this._returnTokenOnCompletion) {
       this._tokens++;
     }
+  }
+
+  get isLimitting() {
+    return this._limiting;
+  }
+  get isRunning() {
+    return this._running;
+  }
+  get avaliableTokens() {
+    return this._tokens;
   }
 
   get pendingRequests() {
