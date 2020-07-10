@@ -92,6 +92,7 @@ class RateLimiter {
         const request = this._queue.dequeue();
         if (!request) return;
         await this.handleCallback<T, K>(request);
+        if (this._returnTokenOnCompletion) this._tokens++;
       } 
       else this._limiting = true;
     }
@@ -101,7 +102,6 @@ class RateLimiter {
     if (!this._queue.isEmpty) return this.run(true);
     else {
       this._running = false;
-      this.run(); // maybe fix
     }
   }
   private async handleCallback<T, K>(request: IProcessingRateLimiterObject<T, K>): Promise<void> {
@@ -118,9 +118,6 @@ class RateLimiter {
           timeCompleted: Date.now(),
           returnValue: returnValue
         }), error);
-    if (this._returnTokenOnCompletion) {
-      this._tokens++;
-    }
   }
 
   get isLimitting() {
