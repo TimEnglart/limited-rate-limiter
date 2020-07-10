@@ -90,7 +90,10 @@ class RateLimiter {
           this._stdOut(`IN LOOP --- TOKENS: ${this._tokens}`);
         this._tokens--;
         const request = this._queue.dequeue();
-        if (!request) return;
+        if (!request) {
+          this._tokens++;
+          return;
+        }
         await this.handleCallback<T, K>(request);
         if (this._returnTokenOnCompletion) this._tokens++;
       } 
