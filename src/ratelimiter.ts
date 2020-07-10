@@ -61,7 +61,7 @@ class RateLimiter {
     });
   }
 
-  private resetOperations(...args: any[]) {
+  private resetOperations(limitAmount?: number) {
     this._resetting = true;
     if (this._debugOutput)
       this._stdOut(
@@ -69,11 +69,10 @@ class RateLimiter {
           this._limiting ? this._delay : this._rate
         }`
       );
-    if (args.length && args[0] !== this._rate) this._limiting = false;
+    if (limitAmount && limitAmount !== this._rate) this._limiting = false;
     this._tokens = this._operations;
     if (!this._queue.isEmpty)
-      setTimeout(
-        () => this.resetOperations(),
+      setTimeout(this.resetOperations.bind(this),
         this._limiting ? this._delay : this._rate,
         this._limiting ? this._delay : this._rate
       );

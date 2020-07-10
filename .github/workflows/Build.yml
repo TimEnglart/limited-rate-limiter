@@ -1,14 +1,6 @@
 name: Build & Publish
 
-on:
-  push:
-    paths-ignore:
-      - "etc/**"
-      - "client/**"
-  pull_request:
-    paths-ignore:
-      - "etc/**"
-      - "client/**"
+on: [push]
 
 jobs:
   build:
