@@ -92,6 +92,7 @@ class RateLimiter {
         const request = this._queue.dequeue();
         if (!request) {
           this._tokens++;
+          this._running = false;
           return;
         }
         await this.handleCallback<T, K>(request);
